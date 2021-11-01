@@ -5,7 +5,8 @@
 namespace bintree {
     template <typename T>
     struct TNode : std::enable_shared_from_this<TNode<T>> {
-        using weakPtr = std::weak_ptr<TNode<T>>; // new
+        // указатель на родителя теперь weak_ptr, чтобы не было циклических зависмостей с shared_ptr
+        using weakPtr = std::weak_ptr<TNode<T>>; 
         using TNodePtr = std::shared_ptr<TNode<T>>;
         using TNodeConstPtr = std::shared_ptr<const TNode<T>>;
 
@@ -18,7 +19,8 @@ namespace bintree {
         }
 
         bool hasParent() const {
-            return bool(parent.expired()); //new
+            // т.к. теперь это weak_ptr
+            return bool(parent.expired());
         }
 
         T& getValue() {
@@ -46,18 +48,23 @@ namespace bintree {
         }
 
         TNodePtr getParent() {
-            return parent.lock(); //new
+            // т.к. теперь это weak_ptr
+            return parent.lock();
         }
 
         TNodeConstPtr getParent() const {
-            return parent.lock(); // new
+            // т.к. теперь это weak_ptr
+            return parent.lock();
         }
 
         static TNodePtr createLeaf(T v) {
-            return TNodePtr(new TNode(v)); // new
+            // make_shared не мог обращаться к конструктору, т.к. он (конструктор) приватный
+            // теперь тут явный вызов конструктора
+            return TNodePtr(new TNode(v));
         }
 
         static TNodePtr fork(T v, TNode * left, TNode * right) {
+            // аналогично createLeaf
             TNodePtr ptr = TNodePtr(new TNode(v, left, right));
             setParent(ptr->getRight(), ptr);
             setParent(ptr->getLeft(), ptr);
@@ -65,13 +72,15 @@ namespace bintree {
         }
 
         TNodePtr replaceLeft(TNodePtr l) {
-            setParent(l, this->shared_from_this()); //new
+            // получение shared_ptr на себя без повторного создания (два указателя, которые не знают друг о друге, на один объект)
+            setParent(l, this->shared_from_this());
             setParent(left, nullptr);
             std::swap(l, left);
             return l;
         }
 
         TNodePtr replaceRight(TNodePtr r) {
+            // аналогично replaceLeft
             setParent(r, this->shared_from_this()); //new
             setParent(right, nullptr);
             std::swap(r, right);
@@ -97,7 +106,8 @@ namespace bintree {
         T value;
         TNodePtr left = nullptr;
         TNodePtr right = nullptr;
-        weakPtr parent; // new возможно, теперь нельзя nullptr
+        // указатель на родителя теперь weak_ptr
+        weakPtr parent;
 
         TNode(T v)
             : value(v)
