@@ -16,7 +16,7 @@ public:
 	}
 };
 
-template <class T, class oneMoreT>
+template <class T, class oneMoreT, class TT>
 class myAllocator {
 
 public:
@@ -24,12 +24,12 @@ public:
     
     myAllocator() {}
     
-    template<class Tp, class oneMoreTp> 
-    myAllocator(const myAllocator<Tp, oneMoreTp>& other) {}
+    template<class Tp, class oneMoreTp, class TT_2> 
+    myAllocator(const myAllocator<Tp, oneMoreTp, TT_2>& other) {}
 
     T* allocate (std::size_t n) {
     	//std::cout << typeid(T).name() << std::endl;
-        //std::cout << typeid(oneMoreT).name() << std::endl;        
+        std::cout << typeid(TT).name() << std::endl;        
         return reinterpret_cast<T*>(oneMoreT::operator new(n * sizeof(T)));
     
     }
@@ -41,6 +41,6 @@ public:
 
 
 int main() {
-	myAllocator<A, A> allocator;
+	myAllocator<A, A, A> allocator;
 	auto my = std::allocate_shared<A>(allocator);
 }
