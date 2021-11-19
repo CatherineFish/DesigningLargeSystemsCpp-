@@ -1,12 +1,12 @@
 #include<iostream>
 
-class TRandomNumberGenerator {
+class TRandomNumbercerator {
 public:
     virtual ~TRandomNumberGenerator();
     virtual double Generate() const = 0;
 };
 
-class TPoissonGenerator : TRandomNumberGenerator {
+class TPoissonGenerator : public TRandomNumberGenerator {
 public:
     virtual ~TPoissonGenerator() override = default;
     virtual double Generate() const override{
@@ -15,7 +15,7 @@ public:
     }
 };
 
-class TBernoulliGenerator : TRandomNumberGenerator{
+class TBernoulliGenerator : public TRandomNumberGenerator{
 public:
     virtual ~TBernoulliGenerator() override = default;
     virtual double Generate() const override{
@@ -24,7 +24,7 @@ public:
     }
 };
 
-class TGeometricGenerator : TRandomNumberGenerator{
+class TGeometricGenerator : public TRandomNumberGenerator{
 public:
     virtual ~TGeometricGenerator() override = default;
     virtual double Generate() const override{
@@ -33,7 +33,7 @@ public:
     }
 };
 
-class TFiniteGenerator : TRandomNumberGenerator{
+class TFiniteGenerator : public TRandomNumberGenerator{
 public:
     virtual ~TFiniteGenerator() override = default;
     virtual double Generate() const override{
