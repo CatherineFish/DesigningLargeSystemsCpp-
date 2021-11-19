@@ -1,11 +1,11 @@
+#include <map>
 #include "factory.h"
-
 
 class TFactory::TImpl {
 	class ICreator {
 	public:
 		virtual ~ICreator(){}
-		virtual std::unique_ptr<TRandomNumbercerator> Create() const = 0;
+		virtual std::unique_ptr<TRandomNumberGenerator> Create() const = 0;
 	};
 
 	using TCreatorPtr = std::shared_ptr<ICreator>;
@@ -15,8 +15,8 @@ class TFactory::TImpl {
 public:
 	template <class TCurrentGenerator>
 	class TCreator : public ICreator {
-		std::unique_ptr<TRandomNumbercerator> Create() const override{
-			return std::make_unique<TCurrentObject>();
+		std::unique_ptr<TRandomNumberGenerator> Create() const override{
+			return std::make_unique<TCurrentGenerator>();
 		}
 	};
     TImpl() { 
@@ -30,15 +30,36 @@ public:
     
     void RegisterAll() {
         RegisterCreator<TPoissonGenerator>("poisson");
-        RegisterCreator<TSuperObject>("bernoulli");
-        RegisterCreator<TSuperObject>("geometric");
-        RegisterCreator<TSuperObject>("finite");    
+        RegisterCreator<TBernoulliGenerator>("bernoulli");
+        RegisterCreator<TGeometricGenerator>("geometric");
+        RegisterCreator<TFiniteGenerator>("finite");    
     }
 
-    std::unique_ptr<IObject> CreateObject(const std::string& n) const {
-    auto creator = RegisteredCreators.find(n);
-    if (creator == RegisteredCreators.end()) {
-    return nullptr;
+    std::unique_ptr<TRandomNumberGenerator> CreateGenerator(const std::string& t) const {
+        auto creator = RegisteredCreators.find(t);
+        if (creator == RegisteredCreators.end()) {
+            return nullptr;
+        }
+        return creator->second->Create();
     }
-    return creator->second->Create();
+
+    std::vector<std::string> GetAvailableGenerators () const {
+        std::vector<std::string> result;
+        for (const auto& creatorPair : RegisteredCreators) {
+            result.push_back(creatorPair.first);
+        }
+        return result;
+    }
+};
+
+
+std::unique_ptr<TRandomNumberGenerator> TFactory::CreateGenerator(const std::string& t) const {
+    return Impl->CreateGenerator(t);
+}
+
+TFactory::TFactory() : Impl(std::make_unique<TFactory::TImpl>()) {}
+TFactory::~TFactory(){}
+
+std::vector<std::string> TFactory::GetAvailableGenerators() const {
+    return Impl->GetAvailableGenerators();
 }
