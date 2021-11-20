@@ -61,6 +61,7 @@ public:
     using TOpt = TPoissonOptions;
     //virtual ~TPoissonGenerator() override = default;
      
+    TPoissonGenerator(std::unique_ptr<TOpt> lambda_) : lambda(std::move(lambda_)) {} 
     virtual double Generate() const override{
         std::cout << "TPoissonGenerator " << std::endl; 
         return 0; 
@@ -72,7 +73,7 @@ private:
 class TBernoulliGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TBernoulliOptions;
-    
+    TBernoulliGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_)) {}
     //virtual ~TBernoulliGenerator() override = default;
     virtual double Generate() const override{
         std::cout << "TBernoulliGenerator " << std::endl;
@@ -85,7 +86,7 @@ private:
 class TGeometricGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TGeometricOptions;
-
+    TGeometricGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_)) {}
     //virtual ~TGeometricGenerator() override = default;
     virtual double Generate() const override{
         std::cout << "TGeometricGenerator " << std::endl; 
@@ -98,7 +99,7 @@ private:
 class TFiniteGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TFiniteOptions;
-
+    TFiniteGenerator(std::unique_ptr<TOpt> vectors_) : vectors(std::move(vectors_)) {}
     //virtual ~TFiniteGenerator() override = default;
     virtual double Generate() const override{
         std::cout << "TFiniteGenerator " << std::endl;
