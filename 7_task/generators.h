@@ -67,8 +67,9 @@ public:
     using TOpt = TPoissonOptions;
     //virtual ~TPoissonGenerator() override = default;
      
-    TPoissonGenerator(std::unique_ptr<TOpt> lambda_) : lambda(std::move(lambda_), currentDist(lambda->Lambda) {} 
+    TPoissonGenerator(std::unique_ptr<TOpt> lambda_) : lambda(std::move(lambda_)), currentDist(lambda->Lambda) {} 
     virtual double Generate() const override{
+
         std::random_device rd;
         std::mt19937 gen(rd());
         std::cout << "TPoissonGenerator " << std::endl; 
@@ -76,13 +77,13 @@ public:
     }
 private:
     std::unique_ptr<TOpt> lambda;
-    std::poisson_distribution<> currentDist;
+    mutable std::poisson_distribution<int> currentDist;
 };
 
 class TBernoulliGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TBernoulliOptions;
-    TBernoulliGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_), currentDist(p->P) {}
+    TBernoulliGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_)), currentDist(p->P) {}
     //virtual ~TBernoulliGenerator() override = default;
     virtual double Generate() const override{
         std::random_device rd;
@@ -92,13 +93,13 @@ public:
     }
 private:
     std::unique_ptr<TOpt> p;
-    std::bernoulli_distribution currentDist;
+    mutable std::bernoulli_distribution currentDist;
 };
 
 class TGeometricGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TGeometricOptions;
-    TGeometricGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_), currentDist(p->P) {}
+    TGeometricGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_)), currentDist(p->P) {}
     //virtual ~TGeometricGenerator() override = default;
     virtual double Generate() const override{
         std::random_device rd;
@@ -108,20 +109,22 @@ public:
     }
 private:
     std::unique_ptr<TOpt> p;
-    std::geometric_distribution currentDist;
+    mutable std::geometric_distribution<> currentDist;
     
 };
 
 class TFiniteGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TFiniteOptions;
-    TFiniteGenerator(std::unique_ptr<TOpt> vectors_) : vectors(std::move(vectors_), currentDist(vectors->P.begin(), vectors->P.end()) {}
+    TFiniteGenerator(std::unique_ptr<TOpt> vectors_) : vectors(std::move(vectors_)), currentDist(vectors->P.begin(), vectors->P.end()) {}
     //virtual ~TFiniteGenerator() override = default;
     virtual double Generate() const override{
+        std::random_device rd;
+        std::mt19937 gen(rd());
         std::cout << "TFiniteGenerator " << std::endl;
-        return 0;  
+        return currentDist(gen);  
     }
 private:
     std::unique_ptr<TOpt> vectors;
-    std::discrete_distribution currentDist;
+    mutable std::discrete_distribution<> currentDist;
 };

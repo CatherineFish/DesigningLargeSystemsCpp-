@@ -14,6 +14,6 @@ int main() {
 	//	factory.CreateGenerator(genName, arguments)->Generate();
 	//}
 
-	factory.CreateGenerator("poisson", std::make_unique<TPoissonOptions>(5.0))->Generate();
+	std::cout << factory.CreateGenerator("poisson", std::make_unique<TPoissonOptions>(5.0))->Generate();
 	return 0;
 }
