@@ -5,13 +5,14 @@
 class TFactory {
 	class TImpl;
 	std::unique_ptr<const TImpl> Impl;
-	using OptionForFinite = std::tuple<std::vector<double>, std::vector<double>>;
-  	using TOptions = std::variant<double, OptionForFinite>;
+//	using OptionForFinite = std::tuple<std::vector<double>, std::vector<double>>;
 public:
+  	//using TGeneratorOptions = std::unique_ptr<TOptions>;
+
 	TFactory();
 	~TFactory();
 	std::unique_ptr<TRandomNumberGenerator> CreateGenerator(
 		const std::string& type,
-		const TOptions opts) const;
+		std::unique_ptr<TOptions>&& opts) const;
 	std::vector<std::string> GetAvailableGenerators() const;
 };

@@ -5,7 +5,7 @@ class TFactory::TImpl {
 	class ICreator {
 	public:
 		virtual ~ICreator(){}
-		virtual std::unique_ptr<TRandomNumberGenerator> Create(const TOptions opts) const = 0;
+		virtual std::unique_ptr<TRandomNumberGenerator> Create(std::unique_ptr<TOptions> &&opts) const = 0;
 	};
 
 	using TCreatorPtr = std::shared_ptr<ICreator>;
@@ -15,8 +15,14 @@ class TFactory::TImpl {
 public:
 	template <class TCurrentGenerator>
 	class TCreator : public ICreator {
-		std::unique_ptr<TRandomNumberGenerator> Create(const TOptions opts) const override{
-			return std::make_unique<TCurrentGenerator>(opts);
+		std::unique_ptr<TRandomNumberGenerator> Create(std::unique_ptr<TOptions> &&opts) const override{
+			auto CurrenOptions = dynamic_cast<typename TCurrentGenerator::TOpt*>(opts.get());
+            opts.release();
+            if (!CurrenOptions || !CurrenOptions->IsValid())
+            {
+                return nullptr;
+            }
+            return std::make_unique<TCurrentGenerator>(std::unique_ptr<typename TCurrentGenerator::TOpt>(CurrenOptions));
 		}
 	};
     TImpl() { 
@@ -35,12 +41,12 @@ public:
         RegisterCreator<TFiniteGenerator>("finite");    
     }
 
-    std::unique_ptr<TRandomNumberGenerator> CreateGenerator(const std::string& t, const TOptions opts) const {
+    std::unique_ptr<TRandomNumberGenerator> CreateGenerator(const std::string& t, std::unique_ptr<TOptions> &&opts) const {
         auto creator = RegisteredCreators.find(t);
         if (creator == RegisteredCreators.end()) {
             return nullptr;
         }
-        return creator->second->Create(opts);
+        return creator->second->Create(std::move(opts));
     }
 
     std::vector<std::string> GetAvailableGenerators () const {
@@ -53,8 +59,8 @@ public:
 };
 
 
-std::unique_ptr<TRandomNumberGenerator> TFactory::CreateGenerator(const std::string& t) const {
-    return Impl->CreateGenerator(t);
+std::unique_ptr<TRandomNumberGenerator> TFactory::CreateGenerator(const std::string& t, std::unique_ptr<TOptions> &&opts) const {
+    return Impl->CreateGenerator(t, std::move(opts));
 }
 
 TFactory::TFactory() : Impl(std::make_unique<TFactory::TImpl>()) {}

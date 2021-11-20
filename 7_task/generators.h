@@ -1,11 +1,12 @@
 #include <iostream>
-
+#include <numeric>
+#include <algorithm>
 
 class TOptions {
 public:
     virtual ~TOptions();
     virtual bool IsValid() const = 0;
-}
+};
 
 class TPoissonOptions : public TOptions {
     double lambda;
@@ -14,7 +15,7 @@ public:
     bool IsValid() const override {
         return lambda > 0.0;
     }
-}
+};
 
 class TBernoulliOptions : public TOptions {
     double p;
@@ -23,22 +24,22 @@ public:
     bool IsValid() const override {
         return p >= 0.0 && p <= 1.0;
     }
-}
+};
 
 class TGeometricOptions : public TOptions {
     double p;
 public:
-    TBernoulliOptions(double p_): p(p_) {}
+    TGeometricOptions(double p_): p(p_) {}
     bool IsValid() const override {
         return p >= 0.0 && p <= 1.0;
     }
-}
+};
 
 class TFiniteOptions : public TOptions {
     std::vector<double> x;
     std::vector<double> p;
 public:
-    TBernoulliOptions(std::vector<double> x, std::vector<double> p_): x(x_), p(p_) {}
+    TFiniteOptions(std::vector<double> x_, std::vector<double> p_): x(x_), p(p_) {}
     
     bool IsValid() const override {
         if (x.size() != p.size()) {
@@ -47,7 +48,7 @@ public:
         double sum = std::accumulate(p.begin(), p.end(), 0.0);
         return std::all_of (p.begin(), p.end(), [](double i) {return i >= 0.0 && i <= 1.0;}) && (sum == 1);
     }
-}
+};
 
 class TRandomNumberGenerator {
 public:
