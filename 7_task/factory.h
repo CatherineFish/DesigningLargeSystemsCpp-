@@ -5,9 +5,7 @@
 class TFactory {
 	class TImpl;
 	std::unique_ptr<const TImpl> Impl;
-//	using OptionForFinite = std::tuple<std::vector<double>, std::vector<double>>;
 public:
-  	//using TGeneratorOptions = std::unique_ptr<TOptions>;
 
 	TFactory();
 	~TFactory();

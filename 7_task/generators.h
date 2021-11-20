@@ -52,6 +52,7 @@ public:
             return false;
         }
         double sum = std::accumulate(P.begin(), P.end(), 0.0);
+        
         return std::all_of (P.begin(), P.end(), [](double i) {return i >= 0.0 && i <= 1.0;}) && (sum == 1);
     }
 };
@@ -64,15 +65,12 @@ public:
 
 class TPoissonGenerator : public TRandomNumberGenerator {
 public:
-    using TOpt = TPoissonOptions;
-    //virtual ~TPoissonGenerator() override = default;
-     
+    using TOpt = TPoissonOptions; 
     TPoissonGenerator(std::unique_ptr<TOpt> lambda_) : lambda(std::move(lambda_)), currentDist(lambda->Lambda) {} 
     virtual double Generate() const override{
 
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::cout << "TPoissonGenerator " << std::endl; 
         return currentDist(gen);  
     }
 private:
@@ -84,11 +82,9 @@ class TBernoulliGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TBernoulliOptions;
     TBernoulliGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_)), currentDist(p->P) {}
-    //virtual ~TBernoulliGenerator() override = default;
     virtual double Generate() const override{
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::cout << "TBernoulliGenerator " << std::endl;
         return currentDist(gen);  
     }
 private:
@@ -100,11 +96,9 @@ class TGeometricGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TGeometricOptions;
     TGeometricGenerator(std::unique_ptr<TOpt> p_) : p(std::move(p_)), currentDist(p->P) {}
-    //virtual ~TGeometricGenerator() override = default;
     virtual double Generate() const override{
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::cout << "TGeometricGenerator " << std::endl; 
         return currentDist(gen); 
     }
 private:
@@ -117,12 +111,10 @@ class TFiniteGenerator : public TRandomNumberGenerator{
 public:
     using TOpt = TFiniteOptions;
     TFiniteGenerator(std::unique_ptr<TOpt> vectors_) : vectors(std::move(vectors_)), currentDist(vectors->P.begin(), vectors->P.end()) {}
-    //virtual ~TFiniteGenerator() override = default;
     virtual double Generate() const override{
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::cout << "TFiniteGenerator " << std::endl;
-        return currentDist(gen);  
+        return vectors->X[currentDist(gen)];  
     }
 private:
     std::unique_ptr<TOpt> vectors;
