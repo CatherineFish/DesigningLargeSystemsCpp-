@@ -5,7 +5,7 @@ class TFactory::TImpl {
 	class ICreator {
 	public:
 		virtual ~ICreator(){}
-		virtual std::unique_ptr<TRandomNumberGenerator> Create() const = 0;
+		virtual std::unique_ptr<TRandomNumberGenerator> Create(const TOptions opts) const = 0;
 	};
 
 	using TCreatorPtr = std::shared_ptr<ICreator>;
@@ -15,8 +15,8 @@ class TFactory::TImpl {
 public:
 	template <class TCurrentGenerator>
 	class TCreator : public ICreator {
-		std::unique_ptr<TRandomNumberGenerator> Create() const override{
-			return std::make_unique<TCurrentGenerator>();
+		std::unique_ptr<TRandomNumberGenerator> Create(const TOptions opts) const override{
+			return std::make_unique<TCurrentGenerator>(opts);
 		}
 	};
     TImpl() { 
@@ -35,12 +35,12 @@ public:
         RegisterCreator<TFiniteGenerator>("finite");    
     }
 
-    std::unique_ptr<TRandomNumberGenerator> CreateGenerator(const std::string& t) const {
+    std::unique_ptr<TRandomNumberGenerator> CreateGenerator(const std::string& t, const TOptions opts) const {
         auto creator = RegisteredCreators.find(t);
         if (creator == RegisteredCreators.end()) {
             return nullptr;
         }
-        return creator->second->Create();
+        return creator->second->Create(opts);
     }
 
     std::vector<std::string> GetAvailableGenerators () const {
