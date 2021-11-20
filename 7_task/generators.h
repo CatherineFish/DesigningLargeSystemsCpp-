@@ -1,10 +1,11 @@
 #include <iostream>
 #include <numeric>
 #include <algorithm>
+#include <memory>
 
 class TOptions {
 public:
-    virtual ~TOptions();
+    //virtual ~TOptions();
     virtual bool IsValid() const = 0;
 };
 
@@ -12,7 +13,7 @@ class TPoissonOptions : public TOptions {
     double lambda;
 public:
     TPoissonOptions(double lambda_): lambda(lambda_) {}
-    bool IsValid() const override {
+    virtual bool IsValid() const override {
         return lambda > 0.0;
     }
 };
@@ -21,7 +22,7 @@ class TBernoulliOptions : public TOptions {
     double p;
 public:
     TBernoulliOptions(double p_): p(p_) {}
-    bool IsValid() const override {
+    virtual bool IsValid() const override {
         return p >= 0.0 && p <= 1.0;
     }
 };
@@ -30,7 +31,7 @@ class TGeometricOptions : public TOptions {
     double p;
 public:
     TGeometricOptions(double p_): p(p_) {}
-    bool IsValid() const override {
+    virtual bool IsValid() const override {
         return p >= 0.0 && p <= 1.0;
     }
 };
@@ -41,7 +42,7 @@ class TFiniteOptions : public TOptions {
 public:
     TFiniteOptions(std::vector<double> x_, std::vector<double> p_): x(x_), p(p_) {}
     
-    bool IsValid() const override {
+    virtual bool IsValid() const override {
         if (x.size() != p.size()) {
             return false;
         }
