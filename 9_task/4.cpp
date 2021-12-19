@@ -16,7 +16,6 @@ int main (int argc, char* argv[]) {
     }
     
     for (size_t i = 0; i < 500000; i++) {
-        auto it = myMap.find(801);
         myMap.insert({200, 200});
         if (std::size(myMap) == size) {
             std::cout << "Bad insert new" << std::endl;

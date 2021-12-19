@@ -15,10 +15,13 @@ int main (int argc, char* argv[]) {
         }
         size++;
     }
-    
+
+    auto hintIt = myMap.find(201); 
+    // вычисляется один раз, чтобы не влиять на время выполнения
+    // кажется, что не должен меняться от итерации к итерации, 
+    // т.к. в цикле один и тот же элемент добавляется и удаляется
     for (size_t i = 0; i < 500000; i++) {
-        auto it = myMap.find(201);
-        myMap.insert(it, {200, 200});
+        myMap.insert(hintIt, {200, 200});
         if (std::size(myMap) == size) {
             std::cout << "Bad insert new" << std::endl;
         }

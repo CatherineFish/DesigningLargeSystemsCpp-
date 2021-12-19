@@ -16,8 +16,8 @@ int main (int argc, char* argv[]) {
     }
     
     for (size_t i = 0; i < 500000; i++) {
-        auto it = myMap.find(801);
-        myMap.insert({800, 800});
+        auto it = myMap.find(801); //не используется, но вычисляется, тк в версии с hint поиск элемента необходим, 
+        myMap.insert({800, 800});  // но этот поиск влияет на время выполнения. В 4_hint.cpp представлен другой вариант для сравнения.
         if (std::size(myMap) == size) {
             std::cout << "Bad insert new" << std::endl;
         }
