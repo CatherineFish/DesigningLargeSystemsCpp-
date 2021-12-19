@@ -1,6 +1,6 @@
 Для запуска:
 
-"""
+```
 chmod ugo+x scen.sh
-./scen
-"""
+./scen.sh
+```
